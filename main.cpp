@@ -421,6 +421,11 @@ QString getGlobalStyleSheet(const QColor &baseColor,
 int main(int argc, char *argv[]) {
   QApplication a(argc, argv);
   MainWindow w;
+  w.setWindowTitle("quickC");
+  QPalette pxp;
+  QPixmap pixmap(32, 32);
+  pixmap.fill(Qt::transparent);
+  w.setWindowIcon(QIcon(pixmap));
   // w.setStyleSheet(getGlobalStyleSheet(QColor("#3c3c3c"), QColor("#2c2c2c")));
   w.show();
 
