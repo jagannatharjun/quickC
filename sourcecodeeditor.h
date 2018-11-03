@@ -1,6 +1,7 @@
 #ifndef SOURCECODEEDITOR_H
 #define SOURCECODEEDITOR_H
 
+#include <QCompleter>
 #include <QDebug>
 #include <QPlainTextEdit>
 #include <vector>
@@ -33,15 +34,20 @@ public:
   std::vector<std::pair<QChar, QChar>> CharsToComplete() const;
   void setCharsToComplete(
       const std::vector<std::pair<QChar, QChar>> &CharsToComplete);
+  void setCompleter(QCompleter *c);
+  QCompleter *completer() const;
 
 private slots:
   void updateLineNumberAreaWidth(int newBlockCount);
   void highlightCurrentLine();
   void updateLineNumberArea(const QRect &, int);
+  void insertCompletion(const QString &completion);
 
 protected:
   void keyPressEvent(QKeyEvent *e) override;
   bool event(QEvent *) override;
+
+  void focusInEvent(QFocusEvent *e) override;
   void resizeEvent(QResizeEvent *event) override;
 
 private:
@@ -52,6 +58,8 @@ private:
   void moveTextCursor(QTextCursor::MoveOperation operation,
                       QTextCursor::MoveMode mode = QTextCursor::MoveAnchor,
                       int n = 1);
+  QString textUnderCursor() const;
+  QCompleter *c;
 };
 
 #endif // SOURCECODEEDITOR_H

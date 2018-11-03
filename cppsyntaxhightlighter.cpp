@@ -77,8 +77,35 @@ CppSyntaxHightlighter::CppSyntaxHightlighter(QTextDocument *parent)
   highlightingRules.append(rule);
 }
 
+void CppSyntaxHightlighter::updateWordListModel(const QString &text) {
+  const auto terminators = {'(',  ')', ' ', ';', '\r',
+                            '\n', ',', '{', '}', '\t'};
+  for (auto tb = text.cbegin(); tb != text.cend(); tb++) {
+    QChar kTerm = 0;
+    decltype(tb) kEnd = tb;
+    while (kTerm == 0 && kEnd != text.cend()) {
+      for (auto t : terminators)
+        if (*kEnd == t) {
+          kTerm = t;
+          break;
+        }
+      if (kTerm == 0)
+        kEnd++;
+    }
+    if (kEnd != text.cend() && kEnd != tb) {
+      auto forInsert = QString(tb, kEnd - tb);
+      if (!m_words.contains(forInsert))
+        m_words << forInsert;
+      tb = kEnd;
+    }
+  }
+  m_wordsListModel.setStringList(m_words);
+  qDebug() << "Set String list" << m_words.size();
+}
+
 void CppSyntaxHightlighter::highlightBlock(const QString &text) {
   qDebug() << "Matching " << text;
+  updateWordListModel(text);
   foreach (const HighlightingRule &rule, highlightingRules) {
     QRegularExpressionMatchIterator matchIterator =
         rule.pattern.globalMatch(text);

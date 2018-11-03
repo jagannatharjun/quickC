@@ -4,6 +4,7 @@
 #include "sourcecodeeditor.h"
 #include "ui_mainwindow.h"
 #include <QAction>
+#include <QCompleter>
 #include <QDebug>
 #include <QFile>
 #include <QFileDialog>
@@ -18,7 +19,11 @@ struct MainWindow::_Detail {
   EditProcess compilationEdit, runEdit;
   QTabWidget runMenuTabs;
   CppSyntaxHightlighter highlighter;
+  QCompleter completer;
   _Detail() : highlighter{sourceEdit.document()} {
+    completer.setModel(highlighter.wordsListModel());
+    sourceEdit.setCompleter(&completer);
+
     compilationEdit.setArguments({"-x", "c", "-Wall", "-"});
     qputenv("path", qgetenv("path") + ";./Mingw/bin/");
     if (QFile("./Mingw/bin/gcc.exe").exists())
